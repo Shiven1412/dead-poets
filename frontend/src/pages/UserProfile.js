@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import PoemCard from '../components/PoemCard';
+import { colors } from '../theme'; // Import theme colors
 
 const ProfileContainer = styled.div`
   max-width: 800px;
@@ -107,8 +108,103 @@ const FollowButton = styled.button`
   margin-top: 10px;
 `;
 
+const EditBioButton = styled.button`
+  background-color: ${colors.primary};
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: ${colors.secondary};
+    transform: translateY(-2px);
+  }
+`;
+
+const CancelButton = styled.button`
+  background-color: #ccc;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+
+  &:hover {
+    background-color: #999;
+    transform: translateY(-2px);
+  }
+`;
+
 const PoemsContainer = styled.div`
   margin-top: 30px;
+`;
+
+const Input = styled.input`
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-family: 'Merriweather', serif;
+  font-size: 16px;
+  width: 85%;
+
+  &:focus {
+    border-color: ${colors.primary};
+    outline: none;
+  }
+`;
+
+const TextArea = styled.textarea`
+  width: 85%;
+  padding: 15px;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-family: 'Merriweather', serif;
+  font-size: 16px;
+  resize: vertical;
+  min-height: 150px;
+
+  &:focus {
+    border-color: ${colors.primary};
+    outline: none;
+  }
+`;
+
+const SubmitButton = styled.button`
+  background-color: ${colors.primary};
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: ${colors.secondary};
+    transform: translateY(-2px);
+  }
+`;
+
+const PostForm = styled.form`
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  border: 2px solid ${colors.primary};
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
 `;
 
 const UserProfile = () => {
@@ -119,6 +215,9 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [bioInput, setBioInput] = useState('');
+  const [content, setContent] = useState('');
+  const [title, setTitle] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -129,7 +228,7 @@ const UserProfile = () => {
               Authorization: `Bearer ${localStorage.getItem('authToken')}`
             }
           }),
-          axios.get(`https://web-production-09e14.up.railway.app/api/poems?author=${userId}`, { // Corrected URL
+          axios.get(`https://web-production-09e14.up.railway.app/api/poems?author=${userId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('authToken')}`
             }
@@ -187,6 +286,32 @@ const UserProfile = () => {
     setPoems(poems.map(poem => poem._id === updatedPoem._id ? updatedPoem : poem));
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(
+        'https://web-production-09e14.up.railway.app/api/poems',
+        { title, content, author: userId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
+        }
+      );
+      setContent('');
+      setTitle('');
+      setShowForm(false);
+      const poemsRes = await axios.get(`https://web-production-09e14.up.railway.app/api/poems?author=${userId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+      });
+      setPoems(poemsRes.data);
+    } catch (error) {
+      console.error('Error posting poem:', error);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!user) return <div>User not found</div>;
 
@@ -205,19 +330,19 @@ const UserProfile = () => {
                 onChange={(e) => setBioInput(e.target.value)}
                 style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
               />
-              <button onClick={handleUpdateBio}>Save</button>
-              <button onClick={() => setIsEditingBio(false)}>Cancel</button>
+              <SubmitButton onClick={handleUpdateBio}>Save</SubmitButton>
+              <CancelButton onClick={() => setIsEditingBio(false)}>Cancel</CancelButton>
             </div>
           ) : (
             <>
               <Bio>{user.bio || 'No bio yet.'}</Bio>
               {localStorage.getItem('userId') === userId && (
-                <button onClick={() => {
+                <EditBioButton onClick={() => {
                   setIsEditingBio(true);
                   setBioInput(user.bio || '');
                 }}>
                   Edit Bio
-                </button>
+                </EditBioButton>
               )}
             </>
           )}
@@ -245,6 +370,48 @@ const UserProfile = () => {
           )}
         </ProfileInfo>
       </ProfileHeader>
+
+      {localStorage.getItem('userId') === userId && (
+        <>
+          {showForm ? (
+            <PostForm onSubmit={handleSubmit}>
+              <Input
+                type="text"
+                placeholder="Poem Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+              <TextArea
+                placeholder="Write your poem here..."
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                required
+              />
+              <div>
+                <SubmitButton type="submit">Post Poem</SubmitButton>
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  style={{
+                    marginLeft: '10px',
+                    background: 'none',
+                    border: 'none',
+                    color: colors.lightText,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </PostForm>
+          ) : (
+            <SubmitButton onClick={() => setShowForm(true)}>
+              Create New Poem
+            </SubmitButton>
+          )}
+        </>
+      )}
 
       <PoemsContainer>
         <h2>Poems</h2>

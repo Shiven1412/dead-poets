@@ -47,25 +47,22 @@ const Signup = ({ onSignupSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://web-production-09e14.up.railway.app/api/users/register', {
-        username,
-        email,
-        password,
-      });
-      
-      // Check for successful response
-      if (response.data && response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
-        localStorage.setItem('userId', response.data._id);
-        onSignupSuccess(); // This should trigger navigation in parent
+      const response = await axios.post(
+        'https://web-production-09e14.up.railway.app/api/users/register',
+        { username, email, password }
+      );
+
+      if (response.status === 201) { // Check for 201 Created status
+        onSignupSuccess(); // Call the onSignupSuccess prop
+        // Optionally, navigate to a different page:
+        // navigate('/login');
       } else {
-        setError('Registration successful but no token received');
+        setError('Signup failed');
       }
     } catch (error) {
-      console.error('Signup error:', error.response?.data);
-      setError(error.response?.data?.message || 'Signup failed. Please try again.');
+      console.error('Signup error:', error);
+      setError('Signup failed');
     }
-  
   };
 
   return (

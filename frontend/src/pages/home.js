@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import PoemCard from '../components/PoemCard';
 import { colors } from '../theme';
+import { FaSearch } from 'react-icons/fa'; // Import a search icon
 
 // Styled Components
 const PageContainer = styled.div`
@@ -63,52 +64,6 @@ const NavLink = styled(Link)`
   }
 `;
 
-const PostForm = styled.form`
-  background-color: white;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-  border: 2px solid ${colors.primary};
-
-  @media (max-width: 768px) {
-    padding: 15px;
-  }
-`;
-
-const TextArea = styled.textarea`
-  width: 85%;
-  padding: 15px;
-  border: 1px solid #E2E8F0;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  font-family: 'Merriweather', serif;
-  font-size: 16px;
-  resize: vertical;
-  min-height: 150px;
-
-  &:focus {
-    border-color: ${colors.primary};
-    outline: none;
-  }
-`;
-
-const SubmitButton = styled.button`
-  background-color: ${colors.primary};
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: ${colors.secondary};
-    transform: translateY(-2px);
-  }
-`;
-
 const SectionTitle = styled.h2`
   border-bottom: 2px solid ${colors.primary};
   padding-bottom: 8px;
@@ -117,25 +72,18 @@ const SectionTitle = styled.h2`
   color: ${colors.text};
 `;
 
-const Input = styled.input`
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1.5px solid #ddd;
-  border-radius: 10px;
-  font-family: 'Merriweather', serif;
-  font-size: 16px;
-  width: 85%;
-
-  &:focus {
-    border-color: ${colors.primary};
-    outline: none;
-  }
-`;
-
 const SearchContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  /* Hide the input by default */
+  input[type="text"] {
+    display: none;
+  }
+
+  &:hover input[type="text"],
+  input[type="text"]:focus {
+    display: block; /* Show input on hover or focus */
+  }
 `;
 
 const SearchInput = styled.input`
@@ -150,9 +98,12 @@ const SearchButton = styled.button`
   background-color: ${colors.primary};
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 8px; /* Reduced padding for icon */
+  border-radius: 50%; /* Make it a circle */
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const SearchResults = styled.div`
@@ -176,9 +127,6 @@ const SearchResultItem = styled(Link)`
 
 const Home = () => {
   const [poems, setPoems] = useState([]);
-  const [content, setContent] = useState('');
-  const [title, setTitle] = useState('');
-  const [showForm, setShowForm] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
@@ -217,26 +165,6 @@ const Home = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('https://web-production-09e14.up.railway.app/api/poems',
-        { title, content },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`
-          }
-        }
-      );
-      setContent('');
-      setTitle('');
-      setShowForm(false);
-      fetchPoems();
-    } catch (error) {
-      console.error('Error posting poem:', error);
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userId');
@@ -267,11 +195,14 @@ const Home = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`https://web-production-09e14.up.railway.app/api/users/search?search=${searchTerm}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-        },
-      });
+      const response = await axios.get(
+        `https://web-production-09e14.up.railway.app/api/users/search?search=${searchTerm}`, // Correctly pass the search term
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
+        }
+      );
       setSearchResults(response.data);
     } catch (error) {
       console.error('Error searching users:', error);
@@ -300,48 +231,6 @@ const Home = () => {
         </Nav>
       </Header>
 
-      {isLoggedIn && (
-        <>
-          {showForm ? (
-            <PostForm onSubmit={handleSubmit}>
-              <Input
-                type="text"
-                placeholder="Poem Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
-              <TextArea
-                placeholder="Write your poem here..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                required
-              />
-              <div>
-                <SubmitButton type="submit">Post Poem</SubmitButton>
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  style={{
-                    marginLeft: '10px',
-                    background: 'none',
-                    border: 'none',
-                    color: colors.lightText,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </PostForm>
-          ) : (
-            <SubmitButton onClick={() => setShowForm(true)}>
-              Create New Poem
-            </SubmitButton>
-          )}
-        </>
-      )}
-
       <SearchContainer>
         <SearchInput
           type="text"
@@ -349,7 +238,9 @@ const Home = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <SearchButton onClick={handleSearch}>Search</SearchButton>
+        <SearchButton onClick={handleSearch}>
+          <FaSearch /> {/* Use the search icon */}
+        </SearchButton>
       </SearchContainer>
 
       <SearchResults>
@@ -368,7 +259,7 @@ const Home = () => {
             poem={poem}
             onLike={handleLike}
             updatePoem={updatePoem}
-            currentUser={currentUser}
+            currentUser={currentUser} // Pass the currentUser prop
           />
         ))
       ) : (

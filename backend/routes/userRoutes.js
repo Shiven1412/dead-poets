@@ -26,5 +26,4 @@ router.post('/:id/unfollow', protect, unfollowUser);
 router.get('/:id', protect, getUserById);
 router.get('/search', searchUsers);
 
-
 module.exports = router;

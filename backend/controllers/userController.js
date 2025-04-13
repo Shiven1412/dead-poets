@@ -216,24 +216,24 @@ const unfollowUser = asyncHandler(async (req, res) => {
 // @desc    Search users
 // @route   GET /api/users/search
 // @access  Private
-const searchUsers = asyncHandler(async (req, res) => {
-  const keyword = req.query.search
-    ? {
-        $or: [
-          { username: { $regex: req.query.search, $options: 'i' } },
-          { email: { $regex: req.query.search, $options: 'i' } },
-        ],
-      }
-    : {};
+const searchUsers = async (req, res) => {
+  const searchTerm = req.query.search;
 
-  try {
-    const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
-    res.json(users);
-  } catch (error) {
-    console.error('Error searching users:', error);
-    res.status(500).json({ message: 'Error searching users' });
+  if (searchTerm) {
+    try {
+      const users = await User.find({
+        username: { $regex: searchTerm, $options: 'i' } // Case-insensitive search
+      }).select('-password'); // Exclude password from results
+
+      res.json(users);
+    } catch (error) {
+      console.error('Error searching users:', error);
+      res.status(500).json({ message: 'Error searching users' });
+    }
+  } else {
+    res.status(400).json({ message: 'Search term is required' });
   }
-});
+};
 
 module.exports = { 
   registerUser, 
