@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { colors } from '../theme';
-import { FaHeart, FaRegHeart } from 'react-icons/fa'; // Import heart icons
+import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa'; // Import heart and comment icons
 
 const Card = styled.div`
   background-color: white;
@@ -100,6 +100,45 @@ const PoemFooter = styled.div`
   padding-top: 10px;
   font-size: 14px;
   color: ${colors.lightText};
+  font-style: italic; /* Add italic style */
+  text-align: right; /* Align to the right */
+`;
+
+const CommentForm = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+const CommentInput = styled.input`
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  margin-right: 10px;
+  flex: 1;
+`;
+
+const CommentButton = styled.button`
+  background-color: ${colors.primary};
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: ${colors.secondary};
+  }
+`;
+
+const CommentsSection = styled.div`
+  margin-top: 10px;
+`;
+
+const Comment = styled.div`
+  padding: 8px;
+  border-bottom: 1px solid #eee;
 `;
 
 const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
@@ -203,29 +242,31 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
         )}
         <ActionButton onClick={handleLikeClick}>
           {hasLiked ? <FaHeart color="red" /> : <FaRegHeart />}
-          {/*Like ({poem.likes.length})*/}
+          {poem.likes.length} {/* Display number of likes */}
         </ActionButton>
         <ActionButton onClick={() => setShowComments(!showComments)}>
-          Comment
+          <FaComment />
         </ActionButton>
       </Actions>
       {showComments && (
-        <div>
-          <input
-            type="text"
-            placeholder="Add a comment..."
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-          />
-          <button onClick={handleCommentSubmit}>Post Comment</button>
+        <CommentsSection>
+          <CommentForm>
+            <CommentInput
+              type="text"
+              placeholder="Add a comment..."
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <CommentButton onClick={handleCommentSubmit}>Post</CommentButton>
+          </CommentForm>
           <div>
             {comments.map((comment) => (
-              <div key={comment._id}>
+              <Comment key={comment._id}>
                 {comment.user.username}: {comment.text}
-              </div>
+              </Comment>
             ))}
           </div>
-        </div>
+        </CommentsSection>
       )}
     </Card>
   );
