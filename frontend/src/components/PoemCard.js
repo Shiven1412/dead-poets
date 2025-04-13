@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { colors } from '../theme';
+import { FaHeart, FaRegHeart } from 'react-icons/fa'; // Import heart icons
 
 const Card = styled.div`
   background-color: white;
@@ -59,22 +60,46 @@ const Content = styled.div`
 
 const Actions = styled.div`
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: space-between;
+  border-top: 1px solid #E2E8F0;
+  padding-top: 15px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 const ActionButton = styled.button`
-  background-color: ${colors.primary};
-  color: white;
+  background: none;
   border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
+  color: ${colors.text};
+  padding: 5px 8px;
+  border-radius: 3px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: color 0.3s ease;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
 
   &:hover {
-    background-color: ${colors.secondary};
+    color: #00C9C8;
   }
+
+  svg {
+    margin-right: 5px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 5px;
+  }
+`;
+
+const PoemFooter = styled.div`
+  border-top: 1px solid #E2E8F0;
+  padding-top: 10px;
+  font-size: 14px;
+  color: ${colors.lightText};
 `;
 
 const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
@@ -82,6 +107,8 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
   const [editedContent, setEditedContent] = useState(poem.content);
   const [commentText, setCommentText] = useState(''); // Add comment state
   const [comments, setComments] = useState(poem.comments || []); // Initialize comments
+  const [showComments, setShowComments] = useState(false); // Add this line
+  const [hasLiked, setHasLiked] = useState(poem.likes.includes(currentUser?._id)); // Check if user has liked
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -138,11 +165,20 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
     }
   };
 
+  const handleLikeClick = () => {
+    onLike(poem._id); // Call the onLike function
+    setHasLiked(!hasLiked); // Toggle the hasLiked state
+  };
+
   return (
     <Card>
       <Header>
-        <Avatar>{poem.author.username.charAt(0).toUpperCase()}</Avatar>
-        <UserLink to={`/profile/${poem.author._id}`}>{poem.author.username}</UserLink>
+        <Avatar>
+          {poem.author?.username?.charAt(0).toUpperCase() || 'A'}
+        </Avatar>
+        <UserLink to={`/profile/${poem.author?._id}`}>
+          {poem.author?.username || 'Anonymous'}
+        </UserLink>
       </Header>
       {isEditing ? (
         <textarea
@@ -153,7 +189,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
       ) : (
         <Content>{poem.content}</Content>
       )}
-      <footer>{poem.caption}</footer> {/* Display caption */}
+      <PoemFooter>{poem.title}</PoemFooter> {/* Display title in footer */}
       <Actions>
         {currentUser && currentUser._id === poem.author._id && (
           <>
@@ -165,26 +201,32 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
             <ActionButton onClick={handleDelete}>Delete</ActionButton>
           </>
         )}
-        <ActionButton onClick={() => onLike(poem._id)}>
-          Like ({poem.likes.length})
+        <ActionButton onClick={handleLikeClick}>
+          {hasLiked ? <FaHeart color="red" /> : <FaRegHeart />}
+          {/*Like ({poem.likes.length})*/}
+        </ActionButton>
+        <ActionButton onClick={() => setShowComments(!showComments)}>
+          Comment
         </ActionButton>
       </Actions>
-      <div>
-        <input
-          type="text"
-          placeholder="Add a comment..."
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-        />
-        <button onClick={handleCommentSubmit}>Post Comment</button>
-      </div>
-      <div>
-        {comments.map((comment) => (
-          <div key={comment._id}>
-            {comment.user.username}: {comment.text}
+      {showComments && (
+        <div>
+          <input
+            type="text"
+            placeholder="Add a comment..."
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+          />
+          <button onClick={handleCommentSubmit}>Post Comment</button>
+          <div>
+            {comments.map((comment) => (
+              <div key={comment._id}>
+                {comment.user.username}: {comment.text}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </Card>
   );
 };
