@@ -1,6 +1,6 @@
 export const colors = {
-  primary: '#00C9C8', // Cyan
-  secondary: '#FF6B9D', // Pink
+  primary: '#a37c34', // Cyan
+  secondary: '#7c1819', // Pink
   accent: '#FFD166', // Yellow
   background: '#F7F9FC',
   text: '#2D3748',
