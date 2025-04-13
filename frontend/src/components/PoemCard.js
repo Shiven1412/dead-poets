@@ -80,6 +80,8 @@ const ActionButton = styled.button`
 const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(poem.content);
+  const [commentText, setCommentText] = useState(''); // Add comment state
+  const [comments, setComments] = useState(poem.comments || []); // Initialize comments
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -118,6 +120,24 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
     }
   };
 
+  const handleCommentSubmit = async () => {
+    try {
+      const response = await axios.post(
+        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}/comments`,
+        { text: commentText },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
+        }
+      );
+      setComments([...comments, response.data]); // Add new comment to state
+      setCommentText(''); // Clear input
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
+  };
+
   return (
     <Card>
       <Header>
@@ -133,6 +153,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
       ) : (
         <Content>{poem.content}</Content>
       )}
+      <footer>{poem.caption}</footer> {/* Display caption */}
       <Actions>
         {currentUser && currentUser._id === poem.author._id && (
           <>
@@ -144,7 +165,26 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
             <ActionButton onClick={handleDelete}>Delete</ActionButton>
           </>
         )}
+        <ActionButton onClick={() => onLike(poem._id)}>
+          Like ({poem.likes.length})
+        </ActionButton>
       </Actions>
+      <div>
+        <input
+          type="text"
+          placeholder="Add a comment..."
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+        />
+        <button onClick={handleCommentSubmit}>Post Comment</button>
+      </div>
+      <div>
+        {comments.map((comment) => (
+          <div key={comment._id}>
+            {comment.user.username}: {comment.text}
+          </div>
+        ))}
+      </div>
     </Card>
   );
 };

@@ -7,6 +7,7 @@ router.post('/', protect, createPoem); // Protect this route
 router.get('/', getAllPoems);
 router.post('/:id/like', protect, likePoem); // Protect this route
 router.post('/:id/comment', protect, commentPoem); // Protect this route
+router.post('/:id/comments', protect, addComment);
 router.delete('/:poemId/comments/:commentId', protect, deleteComment); // Protect this route
 router.put('/:id', protect, updatePoem);
 router.delete('/:id', protect, deletePoem);

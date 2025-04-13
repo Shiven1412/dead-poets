@@ -25,8 +25,9 @@ const ProfileHeader = styled.div`
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column; /* Stack vertically on small screens */
+    align-items: center; /* Center items */
+    text-align: center; /* Center text */
     padding: 10px;
   }
 `;
@@ -55,25 +56,43 @@ const Avatar = styled.div`
 
 const ProfileInfo = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to the start */
+
+  @media (max-width: 480px) {
+    align-items: center; /* Center items on small screens */
+  }
 `;
 
 const Username = styled.h1`
   margin: 0;
   color: #2D3748;
+  font-size: 24px; /* Adjust font size */
+
+  @media (max-width: 480px) {
+    font-size: 20px; /* Smaller font size on small screens */
+  }
 `;
 
 const Bio = styled.p`
   color: #718096;
   margin: 10px 0;
+  font-size: 16px; /* Adjust font size */
+
+  @media (max-width: 480px) {
+    font-size: 14px; /* Smaller font size on small screens */
+  }
 `;
 
 const Stats = styled.div`
   display: flex;
   margin-top: 15px;
+  justify-content: center; /* Center the stats */
 
   @media (max-width: 480px) {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center; /* Center items on small screens */
   }
 `;
 
@@ -90,11 +109,19 @@ const StatItem = styled.div`
 const StatNumber = styled.div`
   font-weight: bold;
   font-size: 18px;
+
+  @media (max-width: 480px) {
+    font-size: 16px; /* Smaller font size on small screens */
+  }
 `;
 
 const StatLabel = styled.div`
   font-size: 14px;
   color: #718096;
+
+  @media (max-width: 480px) {
+    font-size: 12px; /* Smaller font size on small screens */
+  }
 `;
 
 const FollowButton = styled.button`
