@@ -444,13 +444,13 @@ const UserProfile = () => {
         <h2>Poems</h2>
         {poems.length > 0 ? (
           poems.map(poem => (
-            <PoemCard 
-              key={poem._id} 
+            <PoemCard
+              key={poem._id}
               poem={poem}
               currentUser={user}
               updatePoem={updatePoem}
               onDelete={handleDeletePoem}
-              showEditDelete={true} // Add this line
+              showEditDelete={localStorage.getItem('userId') === userId} // Add this line
             />
           ))
         ) : (
