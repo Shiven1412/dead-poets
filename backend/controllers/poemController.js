@@ -90,32 +90,6 @@ const commentPoem = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Add a comment to a poem
-// @route   POST /api/poems/:id/comment
-// @access  Private
-const addComment = async (req, res) => {
-  try {
-    const poem = await Poem.findById(req.params.id);
-
-    if (poem) {
-      const comment = {
-        text: req.body.text,
-        user: req.user._id,
-      };
-
-      poem.comments.push(comment);
-
-      await poem.save();
-      res.status(201).json(comment);
-    } else {
-      res.status(404).json({ message: 'Poem not found' });
-    }
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ message: 'Failed to add comment' });
-  }
-};
-
 // @desc    Delete a comment on a poem
 // @route   DELETE /api/poems/:poemId/comments/:commentId
 // @access  Private
@@ -188,4 +162,4 @@ const deletePoem = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createPoem, getAllPoems, likePoem, commentPoem, addComment, deleteComment, updatePoem, deletePoem };
+module.exports = { createPoem, getAllPoems, likePoem, commentPoem, deleteComment, updatePoem, deletePoem };

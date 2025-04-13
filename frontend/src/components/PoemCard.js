@@ -123,7 +123,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
   const handleCommentSubmit = async () => {
     try {
       const response = await axios.post(
-        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}/comments`,
+        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}/comment`, // Use /comment endpoint
         { text: commentText },
         {
           headers: {
@@ -131,7 +131,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
           },
         }
       );
-      setComments([...comments, response.data]); // Add new comment to state
+      setComments(response.data.comments); // Update comments state
       setCommentText(''); // Clear input
     } catch (error) {
       console.error('Error adding comment:', error);
