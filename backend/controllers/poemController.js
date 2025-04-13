@@ -69,26 +69,31 @@ const likePoem = asyncHandler(async (req, res) => {
 // @desc    Comment on a poem
 // @route   POST /api/poems/:id/comment
 // @access  Private
-const commentPoem = asyncHandler(async (req, res) => {
-  const poem = await Poem.findById(req.params.id);
+const commentPoem = async (req, res) => {
+  try {
+    const poem = await Poem.findById(req.params.id).populate({
+      path: 'comments.user',
+      select: 'username', // Only select the username field
+    });
 
-  if (poem) {
+    if (!poem) {
+      return res.status(404).json({ message: 'Poem not found' });
+    }
+
     const comment = {
       user: req.user._id,
       text: req.body.text,
     };
 
     poem.comments.push(comment);
-    const updatedPoem = await poem.save();
-    const populatedPoem = await Poem.findById(updatedPoem._id)
-      .populate('user', 'username email')
-      .populate('author', 'username');
-    res.status(201).json(populatedPoem);
-  } else {
-    res.status(404);
-    throw new Error('Poem not found');
+    await poem.save();
+
+    res.json({ message: 'Comment added', comments: poem.comments });
+  } catch (error) {
+    console.error('Error commenting on poem:', error);
+    res.status(500).json({ message: 'Failed to comment on poem' });
   }
-});
+};
 
 // @desc    Delete a comment on a poem
 // @route   DELETE /api/poems/:poemId/comments/:commentId

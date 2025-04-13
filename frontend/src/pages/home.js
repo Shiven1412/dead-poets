@@ -260,6 +260,7 @@ const Home = () => {
             onLike={handleLike}
             updatePoem={updatePoem}
             currentUser={currentUser} // Pass the currentUser prop
+            showEditDelete={false} // Add this line
           />
         ))
       ) : (

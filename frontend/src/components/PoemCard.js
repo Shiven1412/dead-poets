@@ -96,12 +96,12 @@ const ActionButton = styled.button`
 `;
 
 const PoemFooter = styled.div`
-  border-top: 1px solid #E2E8F0;
+  border-top: 0.5px solid #E2E8F0;
   padding-top: 10px;
   font-size: 14px;
   color: ${colors.lightText};
   font-style: italic; /* Add italic style */
-  text-align: right; /* Align to the right */
+  text-align: center; /* Align to the right */
 `;
 
 const CommentForm = styled.div`
@@ -136,12 +136,18 @@ const CommentsSection = styled.div`
   margin-top: 10px;
 `;
 
+const CommentsContainer = styled.div`
+  max-height: 160px; /* 8 lines of comment */
+  overflow-y: auto;
+  padding: 5px;
+`;
+
 const Comment = styled.div`
   padding: 8px;
   border-bottom: 1px solid #eee;
 `;
 
-const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
+const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(poem.content);
   const [commentText, setCommentText] = useState(''); // Add comment state
@@ -230,7 +236,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
       )}
       <PoemFooter>{poem.title}</PoemFooter> {/* Display title in footer */}
       <Actions>
-        {currentUser && currentUser._id === poem.author._id && (
+        {showEditDelete && currentUser && currentUser._id === poem.author._id && (
           <>
             {isEditing ? (
               <ActionButton onClick={handleSave}>Save</ActionButton>
@@ -259,13 +265,13 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser }) => {
             />
             <CommentButton onClick={handleCommentSubmit}>Post</CommentButton>
           </CommentForm>
-          <div>
+          <CommentsContainer>
             {comments.map((comment) => (
               <Comment key={comment._id}>
                 {comment.user.username}: {comment.text}
               </Comment>
             ))}
-          </div>
+          </CommentsContainer>
         </CommentsSection>
       )}
     </Card>

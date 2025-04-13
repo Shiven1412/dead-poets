@@ -450,6 +450,7 @@ const UserProfile = () => {
               currentUser={user}
               updatePoem={updatePoem}
               onDelete={handleDeletePoem}
+              showEditDelete={true} // Add this line
             />
           ))
         ) : (
