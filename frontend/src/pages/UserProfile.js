@@ -124,12 +124,12 @@ const UserProfile = () => {
     const fetchProfile = async () => {
       try {
         const [userRes, poemsRes] = await Promise.all([
-          axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, {
+          axios.get(`web-production-09e14.up.railway.app/api/users/${userId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('authToken')}`
             }
           }),
-          axios.get(`${process.env.REACT_APP_API_URL}/api/poems?author=${userId}`, { // Corrected URL
+          axios.get(`web-production-09e14.up.railway.app/api/poems?author=${userId}`, { // Corrected URL
             headers: {
               Authorization: `Bearer ${localStorage.getItem('authToken')}`
             }
@@ -150,7 +150,7 @@ const UserProfile = () => {
 
   const handleFollow = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/users/${userId}/follow`, {}, {
+      await axios.post(`web-production-09e14.up.railway.app/api/users/${userId}/follow`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -164,7 +164,7 @@ const UserProfile = () => {
   const handleUpdateBio = async () => {
     try {
       await axios.put(
-        `${process.env.REACT_APP_API_URL}/api/users/profile`,
+        `web-production-09e14.up.railway.app/api/users/profile`,
         { bio: bioInput },
         {
           headers: {

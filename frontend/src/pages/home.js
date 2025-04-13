@@ -196,7 +196,7 @@ const Home = () => {
 
   const fetchCurrentUser = async (token) => {
     try {
-      const response = await axios.get('${process.env.REACT_APP_API_URL}/api/users/me', {
+      const response = await axios.get('web-production-09e14.up.railway.app/api/users/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -210,7 +210,7 @@ const Home = () => {
 
   const fetchPoems = async () => {
     try {
-      const res = await axios.get('${process.env.REACT_APP_API_URL}/api/poems');
+      const res = await axios.get('web-production-09e14.up.railway.app/api/poems');
       setPoems(res.data);
     } catch (error) {
       console.error('Error fetching poems:', error);
@@ -220,7 +220,7 @@ const Home = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('${process.env.REACT_APP_API_URL}/api/poems',
+      await axios.post('web-production-09e14.up.railway.app/api/poems',
         { title, content },
         {
           headers: {
@@ -247,7 +247,7 @@ const Home = () => {
   const handleLike = async (poemId) => {
     try {
       await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/poems/${poemId}/like`,
+        `web-production-09e14.up.railway.app/api/poems/${poemId}/like`,
         {},
         {
           headers: {
@@ -267,7 +267,7 @@ const Home = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/search?search=${searchTerm}`, {
+      const response = await axios.get(`web-production-09e14.up.railway.app/api/users/search?search=${searchTerm}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
