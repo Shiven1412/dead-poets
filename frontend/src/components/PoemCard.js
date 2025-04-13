@@ -112,7 +112,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, onDelete }) => {
   const handleLike = async () => {
     try {
       const response = await axios.post(
-        `web-production-09e14.up.railway.app/api/poems/${poem._id}/like`,
+        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}/like`,
         {},
         {
           headers: {
@@ -132,7 +132,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, onDelete }) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `web-production-09e14.up.railway.app/api/poems/${poem._id}/comment`,
+        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}/comment`,
         { text: comment },
         {
           headers: {
@@ -151,7 +151,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, onDelete }) => {
   const handleDeleteComment = async (commentId) => {
     try {
       const response = await axios.delete(
-        `web-production-09e14.up.railway.app/api/poems/${poem._id}/comments/${commentId}`,
+        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}/comments/${commentId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`,
@@ -172,7 +172,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, onDelete }) => {
   const handleUpdate = async () => {
     try {
       const response = await axios.put(
-        `web-production-09e14.up.railway.app/api/poems/${poem._id}`,
+        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}`,
         { title: editTitle, content: editContent },
         {
           headers: {
@@ -191,7 +191,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, onDelete }) => {
   const handleDelete = async () => {
     try {
       await axios.delete(
-        `web-production-09e14.up.railway.app/api/poems/${poem._id}`,
+        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`,

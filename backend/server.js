@@ -15,7 +15,7 @@ app.use(cors({
   origin: 'https://dead-poets-society.vercel.app/',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  // credentials: true
+  credentials: true
 }));
 
 

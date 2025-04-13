@@ -47,7 +47,7 @@ const Signup = ({ onSignupSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('web-production-09e14.up.railway.app/api/users/register', {
+      const response = await axios.post('https://web-production-09e14.up.railway.app/api/users/register', {
         username,
         email,
         password,
