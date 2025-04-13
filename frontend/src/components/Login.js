@@ -54,7 +54,7 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:5002/api/users/login',
+        '${process.env.REACT_APP_API_URL}/api/users/login',
         { email, password },
         {
           withCredentials: true,

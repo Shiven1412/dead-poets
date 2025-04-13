@@ -124,12 +124,12 @@ const UserProfile = () => {
     const fetchProfile = async () => {
       try {
         const [userRes, poemsRes] = await Promise.all([
-          axios.get(`http://localhost:5002/api/users/${userId}`, {
+          axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('authToken')}`
             }
           }),
-          axios.get(`http://localhost:5002/api/poems?author=${userId}`, { // Corrected URL
+          axios.get(`${process.env.REACT_APP_API_URL}/api/poems?author=${userId}`, { // Corrected URL
             headers: {
               Authorization: `Bearer ${localStorage.getItem('authToken')}`
             }
@@ -150,7 +150,7 @@ const UserProfile = () => {
 
   const handleFollow = async () => {
     try {
-      await axios.post(`http://localhost:5002/api/users/${userId}/follow`, {}, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/users/${userId}/follow`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -164,7 +164,7 @@ const UserProfile = () => {
   const handleUpdateBio = async () => {
     try {
       await axios.put(
-        `http://localhost:5002/api/users/profile`,
+        `${process.env.REACT_APP_API_URL}/api/users/profile`,
         { bio: bioInput },
         {
           headers: {

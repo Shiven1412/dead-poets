@@ -12,7 +12,7 @@ dotenv.config();
 connectDB();
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://dead-poets-nine.vercel.app/',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -31,7 +31,7 @@ app.use('/api/poems', poemRoutes); // Use poem routes
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 const listEndpoints = require('express-list-endpoints');
 
