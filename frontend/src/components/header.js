@@ -48,7 +48,7 @@ const StyledLink = styled(Link)`  // Use Link from react-router-dom
 const Header = () => {
   return (
     <HeaderWrapper className="header">
-      <Title>Dead Poet's Society</Title>
+      <Title>Dead Poets Society</Title>
       <Nav>
         <List>
           <ListItem><StyledLink to="/">Home</StyledLink></ListItem>

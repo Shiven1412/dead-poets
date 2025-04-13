@@ -282,7 +282,7 @@ const Home = () => {
   return (
     <PageContainer>
       <Header>
-        <Title>Dead Poet's Society</Title>
+        <Title>Dead Poets Society</Title>
         <Nav>
           {isLoggedIn ? (
             <>
