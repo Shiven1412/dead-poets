@@ -156,15 +156,14 @@ const updatePoem = asyncHandler(async (req, res) => {
 // @route   DELETE /api/poems/:id
 // @access  Private
 const deletePoem = asyncHandler(async (req, res) => {
-  const poem = await Poem.findById(req.params.id);
+  const poem = await Poem.findByIdAndDelete(req.params.id);
 
-  if (poem) {
-    await poem.remove();
-    res.json({ message: 'Poem removed' });
-  } else {
+  if (!poem) {
     res.status(404);
     throw new Error('Poem not found');
   }
+  
+  res.json({ message: 'Poem removed' });
 });
 
 module.exports = { createPoem, getAllPoems, likePoem, commentPoem, deleteComment, updatePoem, deletePoem };

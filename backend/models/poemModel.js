@@ -23,8 +23,8 @@ const poemSchema = mongoose.Schema(
       validate: {
         validator: function(v) {
           const trimmed = v.trim();
-          return trimmed.length >= 10 && // At least 10 characters
-                 trimmed.split('\n').filter(line => line.trim().length > 0).length >= 2; // At least 2 non-empty lines
+          return trimmed.length >= 5 && // At least 10 characters
+                 trimmed.split('\n').filter(line => line.trim().length > 0).length >= 1; // At least 2 non-empty lines
         },
         message: 'Poem must have at least 10 characters and 2 meaningful lines'
       }

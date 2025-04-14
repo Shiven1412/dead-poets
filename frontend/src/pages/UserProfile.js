@@ -307,9 +307,23 @@ const UserProfile = () => {
     }
   };
 
-  const handleDeletePoem = async (poemId) => {
+ const handleDeletePoem = async (poemId) => {
+  try {
+    await axios.delete(
+      `https://web-production-09e14.up.railway.app/api/poems/${poemId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      }
+    );
+    // Only update local state after successful API call
     setPoems(poems.filter(poem => poem._id !== poemId));
-  };
+  } catch (error) {
+    console.error('Error deleting poem:', error);
+    // Optionally show error message to user
+  }
+};
 
   const updatePoem = async (updatedPoem) => {
     setPoems(poems.map(poem => poem._id === updatedPoem._id ? updatedPoem : poem));
