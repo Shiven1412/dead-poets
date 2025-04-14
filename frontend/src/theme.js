@@ -4,7 +4,9 @@ export const colors = {
   accent: '#FFD166', // Yellow
   background: '#f2f1e2',
   text: '#2D3748',
-  lightText: '#718096'
+  lightText: '#718096',
+  poemcard: '#212121',
+  poemtext: '#7c1819',
 };
 
 export const fonts = {

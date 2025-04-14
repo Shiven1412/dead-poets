@@ -9,6 +9,8 @@ const ProfileContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1);
+  
 
   @media (max-width: 768px) {
     padding: 10px;
@@ -20,9 +22,9 @@ const ProfileHeader = styled.div`
   align-items: center;
   margin-bottom: 30px;
   padding: 20px;
-  background-color: white;
+  background-color: ${colors.background};
   border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 13px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 480px) {
     flex-direction: column; /* Stack vertically on small screens */
@@ -76,7 +78,7 @@ const Username = styled.h1`
 `;
 
 const Bio = styled.p`
-  color: #718096;
+  color:rgb(74, 18, 18);
   margin: 10px 0;
   font-size: 16px; /* Adjust font size */
 

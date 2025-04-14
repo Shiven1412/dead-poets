@@ -6,7 +6,7 @@ import { colors } from '../theme';
 import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa'; // Import heart and comment icons
 
 const Card = styled.div`
-  background-color: white;
+  background-color:rgb(43, 43, 44);
   border-radius: 15px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -44,7 +44,7 @@ const Avatar = styled.div`
 
 const UserLink = styled(Link)`
   font-weight: 600;
-  color: #2D3748;
+  color:rgb(224, 224, 224);
   text-decoration: none;
 
   &:hover {
@@ -56,6 +56,7 @@ const Content = styled.div`
   white-space: pre-line;
   line-height: 1.6;
   margin-bottom: 15px;
+  color:rgb(216, 213, 171)
 `;
 
 const Actions = styled.div`
@@ -73,7 +74,7 @@ const Actions = styled.div`
 const ActionButton = styled.button`
   background: none;
   border: none;
-  color: ${colors.text};
+ color:rgb(216, 213, 171);
   padding: 5px 8px;
   border-radius: 3px;
   cursor: pointer;
@@ -83,7 +84,7 @@ const ActionButton = styled.button`
   align-items: center;
 
   &:hover {
-    color: #00C9C8;
+    color:rgb(255, 191, 152);
   }
 
   svg {
@@ -99,7 +100,7 @@ const PoemFooter = styled.div`
   border-top: 0.5px solid #E2E8F0;
   padding-top: 10px;
   font-size: 14px;
-  color: ${colors.lightText};
+  color:rgb(205, 205, 205);
   font-style: italic; /* Add italic style */
   text-align: center; /* Align to the right */
 `;
@@ -134,6 +135,7 @@ const CommentButton = styled.button`
 
 const CommentsSection = styled.div`
   margin-top: 10px;
+  color:rgb(219, 219, 219)
 `;
 
 const Comment = styled.div`

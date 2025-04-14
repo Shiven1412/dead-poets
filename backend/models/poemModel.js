@@ -5,6 +5,12 @@ const poemSchema = mongoose.Schema(
     title: {
       type: String,
       required: true,
+      validate: {
+        validator: function(v) {
+          return v.trim().length > 0;
+        },
+        message: 'Title cannot be empty or just whitespace'
+      }
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -14,13 +20,21 @@ const poemSchema = mongoose.Schema(
     content: {
       type: String,
       required: true,
+      validate: {
+        validator: function(v) {
+          const trimmed = v.trim();
+          return trimmed.length >= 10 && // At least 10 characters
+                 trimmed.split('\n').filter(line => line.trim().length > 0).length >= 2; // At least 2 non-empty lines
+        },
+        message: 'Poem must have at least 10 characters and 2 meaningful lines'
+      }
     },
-    user: {  // Reference to the user who posted the poem
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User', // 'User' is the name of the User model
+      ref: 'User',
     },
-    likes: [{  // Array of user IDs who liked the poem
+    likes: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     }],
@@ -32,7 +46,13 @@ const poemSchema = mongoose.Schema(
       },
       text: {
         type: String,
-        required: true
+        required: true,
+        validate: {
+          validator: function(v) {
+            return v.trim().length > 0;
+          },
+          message: 'Comment cannot be empty or just whitespace'
+        }
       },
       createdAt: {
         type: Date,
@@ -41,10 +61,9 @@ const poemSchema = mongoose.Schema(
     }]
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
 const Poem = mongoose.model('Poem', poemSchema);
-
 module.exports = Poem;
