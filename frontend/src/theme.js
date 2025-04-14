@@ -2,7 +2,7 @@ export const colors = {
   primary: '#a37c34', // Cyan
   secondary: '#7c1819', // Pink
   accent: '#FFD166', // Yellow
-  background: '#F7F9FC',
+  background: '#f2f1e2',
   text: '#2D3748',
   lightText: '#718096'
 };

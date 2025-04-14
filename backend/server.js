@@ -12,7 +12,7 @@ dotenv.config();
 connectDB();
 
 app.use(cors({
-  origin: 'https://dead-poets-society.vercel.app',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

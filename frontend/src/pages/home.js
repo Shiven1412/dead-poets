@@ -250,9 +250,11 @@ const Home = () => {
           </SearchResultItem>
         ))}
       </SearchResults>
-
-      <SectionTitle>Recent Poems</SectionTitle>
-      {poems.length > 0 ? (
+      {isLoggedIn ? (
+      <> 
+       <SectionTitle>Recent Poems</SectionTitle>
+      
+       {poems.length > 0 ? (
         poems.map(poem => (
           <PoemCard
             key={poem._id}
@@ -262,9 +264,19 @@ const Home = () => {
             currentUser={currentUser} // Pass the currentUser prop
             showEditDelete={false} // Add this line
           />
-        ))
+          
+        )
+      
+      )
       ) : (
         <p>No poems yet. Be the first to post!</p>
+      )}
+      </>
+      ):(
+        <>
+        <SectionTitle>Think.Write.Post</SectionTitle>
+        <p>Please SignUp to be a part of The Dead Poets Society!</p>
+        </>
       )}
     </PageContainer>
   );

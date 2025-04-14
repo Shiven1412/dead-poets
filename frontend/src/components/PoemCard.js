@@ -136,15 +136,20 @@ const CommentsSection = styled.div`
   margin-top: 10px;
 `;
 
-const CommentsContainer = styled.div`
+const Comment = styled.div`
   max-height: 160px; /* 8 lines of comment */
   overflow-y: auto;
   padding: 5px;
 `;
 
-const Comment = styled.div`
-  padding: 8px;
-  border-bottom: 1px solid #eee;
+// const Comment = styled.div`
+//   padding: 8px;
+//   border-bottom: 1px solid #eee;
+// `;
+const CommentsContainer = styled.div`
+  max-height: 160px; /* 8 lines of comment */
+  overflow-y: auto;
+  padding: 5px;
 `;
 
 const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => {

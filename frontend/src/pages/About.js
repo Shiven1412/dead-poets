@@ -27,7 +27,7 @@ const About = () => {
       <Title>About Dead Poet's Society</Title>
       <Paragraph>
         This website is a platform for sharing and discovering poetry. 
-        It's inspired by the spirit of the Dead Poets Society, encouraging users to express themselves creatively and connect with others through the power of words.
+        It is inspired by the spirit of the Dead Poets Society, encouraging users to express themselves creatively and connect with others through the power of words.
       </Paragraph>
       <Paragraph>
         Our mission is to provide a space where poets of all levels can share their work, receive feedback, and find inspiration.
