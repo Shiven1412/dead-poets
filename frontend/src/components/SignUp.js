@@ -1,99 +1,156 @@
+
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import { colors } from '../theme';
 
-const SignupContainer = styled.div`
+// Common styled components for both login and signup
+const AuthContainer = styled.div`
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: ${colors.background};
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Merriweather', serif;
+
+  @media (max-width: 480px) {
+    margin: 20px auto;
+    padding: 20px;
+    width: 90%;
+  }
+`;
+
+const AuthTitle = styled.h2`
+  color: ${colors.primary};
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: 700;
+`;
+
+const AuthForm = styled.form`
   display: flex;
   flex-direction: column;
-  width: 300px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+  gap: 15px;
 `;
 
-const Input = styled.input`
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+const AuthInput = styled.input`
+  padding: 12px 15px;
+  border: 1px solid ${colors.border};
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: ${colors.primary};
+    outline: none;
+  }
 `;
 
-const Button = styled.button`
-  background-color: #4CAF50;
+const AuthButton = styled.button`
+  background-color: ${colors.primary};
   color: white;
-  padding: 10px 15px;
+  padding: 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
 
   &:hover {
-    background-color: #3e8e41;
+    background-color: ${colors.secondary};
+  }
+`;
+
+const AuthFooter = styled.div`
+  text-align: center;
+  margin-top: 20px;
+  color: ${colors.text};
+`;
+
+const AuthLink = styled(Link)`
+  color: ${colors.primary};
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 5px;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
 
 const ErrorMessage = styled.div`
-  color: red;
-  margin-bottom: 10px;
+  color: ${colors.error};
+  background-color: ${colors.errorBackground};
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
 `;
 
-const Signup = ({ onSignupSuccess }) => {
+
+  const Signup = ({ onSignupSuccess }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
       const response = await axios.post(
         'https://web-production-09e14.up.railway.app/api/users/register',
         { username, email, password }
       );
 
-      if (response.status === 201) { // Check for 201 Created status
-        onSignupSuccess(); // Call the onSignupSuccess prop
-        // Optionally, navigate to a different page:
-        // navigate('/login');
-      } else {
-        setError('Signup failed');
+      if (response.status === 201) {
+        onSignupSuccess?.();
+        navigate('/login');
       }
     } catch (error) {
       console.error('Signup error:', error);
-      setError('Signup failed');
+      setError(error.response?.data?.message || 'Signup failed. Please try again.');
     }
   };
 
   return (
-    <SignupContainer>
-      <h2>Sign Up</h2>
+    <AuthContainer>
+      <AuthTitle>Sign Up</AuthTitle>
       {error && <ErrorMessage>{error}</ErrorMessage>}
-      <form onSubmit={handleSubmit}>
-        <Input
+      <AuthForm onSubmit={handleSubmit}>
+        <AuthInput
           type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-        <Input
+        <AuthInput
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <Input
+        <AuthInput
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <Button type="submit">Sign Up</Button>
-      </form>
-    </SignupContainer>
+        <AuthButton type="submit">Sign Up</AuthButton>
+      </AuthForm>
+      <AuthFooter>
+        Already have an account? <AuthLink to="/login">Login here</AuthLink>
+      </AuthFooter>
+    </AuthContainer>
   );
 };
 

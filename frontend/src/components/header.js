@@ -17,7 +17,7 @@ const Title = styled.h1`
   margin-bottom: 0.5em;
   font-style: italic;
   font-weight: normal;
-  color: ${colors.primary}; // Use theme color
+  color: ${colors.text}; // Use theme color
 `;
 
 const Nav = styled.nav`

@@ -1,50 +1,97 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { colors } from '../theme';
 
-const LoginContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+// Common styled components for both login and signup
+const AuthContainer = styled.div`
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: ${colors.background};
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Merriweather', serif;
 
   @media (max-width: 480px) {
+    margin: 20px auto;
+    padding: 20px;
     width: 90%;
-    max-width: 300px;
   }
 `;
 
-const Input = styled.input`
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+const AuthTitle = styled.h2`
+  color: ${colors.primary};
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: 700;
 `;
 
-const Button = styled.button`
-  background-color: #4CAF50;
+const AuthForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+const AuthInput = styled.input`
+  padding: 12px 15px;
+  border: 1px solid ${colors.border};
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: ${colors.primary};
+    outline: none;
+  }
+`;
+
+const AuthButton = styled.button`
+  background-color: ${colors.primary};
   color: white;
-  padding: 10px 15px;
+  padding: 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
 
   &:hover {
-    background-color: #3e8e41;
+    background-color: ${colors.secondary};
+  }
+`;
+
+const AuthFooter = styled.div`
+  text-align: center;
+  margin-top: 20px;
+  color: ${colors.text};
+`;
+
+const AuthLink = styled(Link)`
+  color: ${colors.primary};
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 5px;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
 
 const ErrorMessage = styled.div`
-  color: red;
-  margin-bottom: 10px;
+  color: ${colors.error};
+  background-color: ${colors.errorBackground};
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
 `;
 
-const Login = ({ onLogin }) => {
+
+ const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -57,7 +104,6 @@ const Login = ({ onLogin }) => {
         'https://web-production-09e14.up.railway.app/api/users/login',
         { email, password },
         {
-          withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
           }
@@ -67,38 +113,42 @@ const Login = ({ onLogin }) => {
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
         localStorage.setItem('userId', response.data._id);
-        navigate('/'); // Redirect to home
+        onLogin?.();
+        navigate('/');
       } else {
         setError('Login failed: No token received');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.response?.data?.message || 'Login failed');
+      setError(error.response?.data?.message || 'Login failed. Please try again.');
     }
   };
 
   return (
-    <LoginContainer>
-      <h2>Login</h2>
+    <AuthContainer>
+      <AuthTitle>Login</AuthTitle>
       {error && <ErrorMessage>{error}</ErrorMessage>}
-      <form onSubmit={handleSubmit}>
-        <Input
+      <AuthForm onSubmit={handleSubmit}>
+        <AuthInput
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <Input
+        <AuthInput
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <Button type="submit">Log In</Button>
-      </form>
-    </LoginContainer>
+        <AuthButton type="submit">Log In</AuthButton>
+      </AuthForm>
+      <AuthFooter>
+        New user? <AuthLink to="/signup">Register here</AuthLink>
+      </AuthFooter>
+    </AuthContainer>
   );
 };
 

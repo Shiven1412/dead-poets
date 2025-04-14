@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import PoemCard from '../components/PoemCard';
 import { colors } from '../theme';
-import { FaSearch } from 'react-icons/fa'; // Import a search icon
+import { FaSearch, FaUserCircle, FaChevronDown, FaSignOutAlt } from 'react-icons/fa';
 
 // Styled Components
 const PageContainer = styled.div`
@@ -26,41 +26,74 @@ const Header = styled.header`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
 
-  @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: flex-start;
+  @media (max-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
   }
 `;
 
 const Title = styled.h1`
   color: ${colors.text};
   border-bottom: 2px solid ${colors.primary};
-  padding-bottom: 8px;
+  padding-bottom: 6px;
+  margin: 0;
+  font-size: 1.5rem;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
 `;
 
 const Nav = styled.nav`
   display: flex;
   gap: 15px;
+  align-items: center;
 
-  @media (max-width: 480px) {
-    margin-top: 10px;
-    flex-direction: column;
-    align-items: flex-start;
+  @media (max-width: 768px) {
+    gap: 10px;
   }
 `;
 
 const NavLink = styled(Link)`
-  color: ${colors.primary};
+  color: ${colors.text};
   text-decoration: none;
   font-weight: 600;
   padding: 8px 16px;
   border-radius: 20px;
   transition: all 0.3s ease;
+  white-space: nowrap;
 
   &:hover {
     color: white;
     background-color: ${colors.secondary};
+  }
+
+  @media (max-width: 768px) {
+    display: ${props => (props.hideOnMobile ? 'none' : 'block')};
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+`;
+
+const MobileNavLink = styled(Link)`
+  color: ${colors.text};
+  text-decoration: none;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  font-size: 0.9rem;
+
+  &:hover {
+    background-color: #f0f0f0;
   }
 `;
 
@@ -75,14 +108,21 @@ const SectionTitle = styled.h2`
 const SearchContainer = styled.div`
   display: flex;
   align-items: center;
-  /* Hide the input by default */
-  input[type="text"] {
+  margin-left: auto;
+  margin-right: 15px;
+
+  @media (max-width: 768px) {
     display: none;
   }
+`;
 
-  &:hover input[type="text"],
-  input[type="text"]:focus {
-    display: block; /* Show input on hover or focus */
+const MobileSearchContainer = styled.div`
+  display: none;
+  align-items: center;
+  margin-left: auto;
+
+  @media (max-width: 768px) {
+    display: flex;
   }
 `;
 
@@ -92,18 +132,26 @@ const SearchInput = styled.input`
   border-radius: 20px;
   margin-right: 10px;
   width: 200px;
+  transition: all 0.3s ease;
+  opacity: ${props => (props.show ? '1' : '0')};
+  width: ${props => (props.show ? '200px' : '0')};
+  padding: ${props => (props.show ? '10px' : '0')};
+  border: ${props => (props.show ? '1px solid #ddd' : 'none')};
+  margin-right: ${props => (props.show ? '10px' : '0')};
 `;
 
 const SearchButton = styled.button`
   background-color: ${colors.primary};
   color: white;
   border: none;
-  padding: 8px; /* Reduced padding for icon */
-  border-radius: 50%; /* Make it a circle */
+  padding: 8px;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
 `;
 
 const SearchResults = styled.div`
@@ -125,6 +173,56 @@ const SearchResultItem = styled(Link)`
   }
 `;
 
+const UserDropdown = styled.div`
+  position: relative;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const DropdownToggle = styled.button`
+  background: none;
+  border: none;
+  color: ${colors.primary};
+  font-weight: 600;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color:rgb(168, 165, 142);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  z-index: 100;
+  display: ${props => (props.isOpen ? 'block' : 'none')};
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.19);
+  border-radius: 8px;
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
 const Home = () => {
   const [poems, setPoems] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -132,6 +230,8 @@ const Home = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -169,6 +269,7 @@ const Home = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userId');
     setIsLoggedIn(false);
+    setDropdownOpen(false);
     navigate('/');
   };
 
@@ -196,7 +297,7 @@ const Home = () => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `https://web-production-09e14.up.railway.app/api/users/search?search=${searchTerm}`, // Correctly pass the search term
+        `https://web-production-09e14.up.railway.app/api/users/search?search=${searchTerm}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`,
@@ -204,6 +305,7 @@ const Home = () => {
         }
       );
       setSearchResults(response.data);
+      setMobileSearchOpen(false);
     } catch (error) {
       console.error('Error searching users:', error);
       alert('Error searching users. Please try again.');
@@ -214,13 +316,61 @@ const Home = () => {
     <PageContainer>
       <Header>
         <Title>Dead Poets Society</Title>
+        
+        {/* <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Search for users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            show={true}
+          /> */}
+          {/* <SearchButton onClick={handleSearch}>
+            <FaSearch />
+          </SearchButton>
+        </SearchContainer> */}
+
         <Nav>
           {isLoggedIn ? (
             <>
-              <NavLink to={`/profile/${currentUser?._id}`}>
+              <NavLink to={`/profile/${currentUser?._id}`} hideOnMobile>
                 {currentUser?.username}
               </NavLink>
-              <NavLink as="button" onClick={handleLogout}>Logout</NavLink>
+              <NavLink as="button" onClick={handleLogout} hideOnMobile>
+                Logout
+              </NavLink>
+              
+              {/* <MobileSearchContainer>
+                <SearchButton onClick={() => setMobileSearchOpen(!mobileSearchOpen)}>
+                  <FaSearch />
+                </SearchButton>
+                <SearchInput
+                  type="text"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  show={mobileSearchOpen}
+                />
+              </MobileSearchContainer> */}
+              
+              <UserDropdown>
+                <DropdownToggle onClick={() => setDropdownOpen(!dropdownOpen)}>
+                  <FaUserCircle size={20} />
+                </DropdownToggle>
+                <DropdownMenu isOpen={dropdownOpen}>
+                  <MobileNavLink 
+                    to={`/profile/${currentUser?._id}`} 
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <FaUserCircle /> Profile
+                  </MobileNavLink>
+                  <DropdownItem onClick={handleLogout}>
+                    <FaSignOutAlt /> Logout
+                  </DropdownItem>
+                </DropdownMenu>
+              </UserDropdown>
             </>
           ) : (
             <>
@@ -231,51 +381,38 @@ const Home = () => {
         </Nav>
       </Header>
 
-      <SearchContainer>
-        <SearchInput
-          type="text"
-          placeholder="Search for users..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <SearchButton onClick={handleSearch}>
-          <FaSearch /> {/* Use the search icon */}
-        </SearchButton>
-      </SearchContainer>
-
-      <SearchResults>
-        {searchResults.map(user => (
-          <SearchResultItem key={user._id} to={`/profile/${user._id}`}>
-            {user.username}
-          </SearchResultItem>
-        ))}
-      </SearchResults>
-      {isLoggedIn ? (
-      <> 
-       <SectionTitle>Recent Poems</SectionTitle>
-      
-       {poems.length > 0 ? (
-        poems.map(poem => (
-          <PoemCard
-            key={poem._id}
-            poem={poem}
-            onLike={handleLike}
-            updatePoem={updatePoem}
-            currentUser={currentUser} // Pass the currentUser prop
-            showEditDelete={false} // Add this line
-          />
-          
-        )
-      
-      )
-      ) : (
-        <p>No poems yet. Be the first to post!</p>
+      {mobileSearchOpen && (
+        <SearchResults>
+          {searchResults.map(user => (
+            <SearchResultItem key={user._id} to={`/profile/${user._id}`}>
+              {user.username}
+            </SearchResultItem>
+          ))}
+        </SearchResults>
       )}
-      </>
-      ):(
+      
+      {isLoggedIn ? (
+        <> 
+          <SectionTitle>Recent Poems</SectionTitle>
+          {poems.length > 0 ? (
+            poems.map(poem => (
+              <PoemCard
+                key={poem._id}
+                poem={poem}
+                onLike={handleLike}
+                updatePoem={updatePoem}
+                currentUser={currentUser}
+                showEditDelete={false}
+              />
+            ))
+          ) : (
+            <p>No poems yet. Be the first to post!</p>
+          )}
+        </>
+      ) : (
         <>
-        <SectionTitle>Think.Write.Post</SectionTitle>
-        <p>Please SignUp to be a part of The Dead Poets Society!</p>
+          <SectionTitle></SectionTitle>
+          <p>Please SignUp to be a part of The Dead Poets Society!</p>
         </>
       )}
     </PageContainer>

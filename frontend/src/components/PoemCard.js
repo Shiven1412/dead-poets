@@ -66,7 +66,8 @@ const Actions = styled.div`
   padding-top: 15px;
 
   @media (max-width: 480px) {
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: flex-start;
   }
 `;
