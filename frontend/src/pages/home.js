@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import PoemCard from '../components/PoemCard';
 import { colors } from '../theme';
-import { FaSearch, FaUserCircle, FaChevronDown, FaSignOutAlt } from 'react-icons/fa';
+import { FaSearch, FaUserCircle, FaSignOutAlt, FaSort } from 'react-icons/fa';
 
 // Styled Components
 const PageContainer = styled.div`
@@ -41,7 +41,7 @@ const Title = styled.h1`
   border-bottom: 2px solid ${colors.primary};
   padding-bottom: 6px;
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1rem;
   white-space: nowrap;
 
   @media (max-width: 768px) {
@@ -222,9 +222,36 @@ const DropdownItem = styled.div`
     background-color: #f0f0f0;
   }
 `;
+const SortContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px;
+`;
+
+const SortLabel = styled.span`
+  font-weight: 600;
+  color: ${colors.text};
+`;
+
+const SortSelect = styled.select`
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid ${colors.primary};
+  background-color: ${colors.background};
+  color: ${colors.text};
+  cursor: pointer;
+  font-family: 'Merriweather', serif;
+`;
+
+const SortOption = styled.option`
+  background-color: ${colors.background};
+  color: ${colors.text};
+`;
 
 const Home = () => {
   const [poems, setPoems] = useState([]);
+  const [filteredPoems, setFilteredPoems] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
@@ -232,6 +259,7 @@ const Home = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [sortOption, setSortOption] = useState('latest'); // 'latest', 'oldest', 'random'
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -241,6 +269,33 @@ const Home = () => {
       fetchPoems();
     }
   }, []);
+
+  useEffect(() => {
+    // Apply sorting whenever poems or sortOption changes
+    if (poems.length > 0) {
+      sortPoems();
+    }
+  }, [poems, sortOption]);
+
+  const sortPoems = () => {
+    let sorted = [...poems];
+    
+    switch (sortOption) {
+      case 'latest':
+        sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case 'oldest':
+        sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case 'random':
+        sorted = sorted.sort(() => Math.random() - 0.5);
+        break;
+      default:
+        break;
+    }
+    
+    setFilteredPoems(sorted);
+  };
 
   const fetchCurrentUser = async (token) => {
     try {
@@ -264,6 +319,11 @@ const Home = () => {
       console.error('Error fetching poems:', error);
     }
   };
+
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };
+
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -315,22 +375,8 @@ const Home = () => {
   return (
     <PageContainer>
       <Header>
-        <Title>Dead Poets Society</Title>
+        <Title>Hi, {currentUser?.username}</Title>
         
-        {/* <SearchContainer>
-          <SearchInput
-            type="text"
-            placeholder="Search for users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            show={true}
-          /> */}
-          {/* <SearchButton onClick={handleSearch}>
-            <FaSearch />
-          </SearchButton>
-        </SearchContainer> */}
-
         <Nav>
           {isLoggedIn ? (
             <>
@@ -340,20 +386,6 @@ const Home = () => {
               <NavLink as="button" onClick={handleLogout} hideOnMobile>
                 Logout
               </NavLink>
-              
-              {/* <MobileSearchContainer>
-                <SearchButton onClick={() => setMobileSearchOpen(!mobileSearchOpen)}>
-                  <FaSearch />
-                </SearchButton>
-                <SearchInput
-                  type="text"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  show={mobileSearchOpen}
-                />
-              </MobileSearchContainer> */}
               
               <UserDropdown>
                 <DropdownToggle onClick={() => setDropdownOpen(!dropdownOpen)}>
@@ -381,21 +413,24 @@ const Home = () => {
         </Nav>
       </Header>
 
-      {mobileSearchOpen && (
-        <SearchResults>
-          {searchResults.map(user => (
-            <SearchResultItem key={user._id} to={`/profile/${user._id}`}>
-              {user.username}
-            </SearchResultItem>
-          ))}
-        </SearchResults>
-      )}
-      
       {isLoggedIn ? (
         <> 
           <SectionTitle>Recent Poems</SectionTitle>
-          {poems.length > 0 ? (
-            poems.map(poem => (
+          
+          {/* Add the sort controls */}
+          <SortContainer>
+            <SortLabel>
+              <FaSort /> Sort by:
+            </SortLabel>
+            <SortSelect value={sortOption} onChange={handleSortChange}>
+              <SortOption value="latest">Latest First</SortOption>
+              <SortOption value="oldest">Oldest First</SortOption>
+              <SortOption value="random">Random Order</SortOption>
+            </SortSelect>
+          </SortContainer>
+          
+          {filteredPoems.length > 0 ? (
+            filteredPoems.map(poem => (
               <PoemCard
                 key={poem._id}
                 poem={poem}
@@ -412,7 +447,7 @@ const Home = () => {
       ) : (
         <>
           <SectionTitle></SectionTitle>
-          <p>Please SignUp to be a part of The Dead Poets Society!</p>
+          <p>Welcome to The Dead Poets Society.</p>
         </>
       )}
     </PageContainer>
