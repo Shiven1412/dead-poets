@@ -33,7 +33,7 @@ const Header = styled.header`
     flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
-  }
+  }g
 `;
 
 const Title = styled.h1`
@@ -374,8 +374,14 @@ const Home = () => {
 
   return (
     <PageContainer>
-      <Header>
+      
+      <Header> {isLoggedIn ? (
+        <>
         <Title>Hi, {currentUser?.username}</Title>
+        </>
+        ):(
+          <Title>Dead Poets Society</Title>
+        )}
         
         <Nav>
           {isLoggedIn ? (
