@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -149,6 +147,7 @@ const ErrorMessage = styled.div`
       </AuthForm>
       <AuthFooter>
         Already have an account? <AuthLink to="/login">Login here</AuthLink>
+        <AuthLink to="/forgotpassword">Forgot Password?</AuthLink>
       </AuthFooter>
     </AuthContainer>
   );

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { colors } from '../theme';
 
-// Common styled components for both login and signup
+// Common styled components (you can reuse from Login/Signup)
 const AuthContainer = styled.div`
   max-width: 400px;
   margin: 40px auto;
@@ -64,23 +64,6 @@ const AuthButton = styled.button`
   }
 `;
 
-const AuthFooter = styled.div`
-  text-align: center;
-  margin-top: 20px;
-  color: ${colors.text};
-`;
-
-const AuthLink = styled(Link)`
-  color: ${colors.primary};
-  text-decoration: none;
-  font-weight: 600;
-  margin-left: 5px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
 const ErrorMessage = styled.div`
   color: ${colors.error};
   background-color: ${colors.errorBackground};
@@ -90,67 +73,67 @@ const ErrorMessage = styled.div`
   font-size: 14px;
 `;
 
-
- const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
+const ResetPassword = () => {
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { token } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setMessage('');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     try {
-      const response = await axios.post(
-        'https://web-production-09e14.up.railway.app/api/users/login',
-        { email, password },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }
+      const config = {
+        header: {
+          "Content-Type": "application/json",
+        },
+      };
+      await axios.patch(
+        `https://web-production-09e14.up.railway.app/api/users/resetpassword/${token}`,
+        { password },
+        config
       );
 
-      if (response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
-        localStorage.setItem('userId', response.data._id);
-        onLogin?.();
-        navigate('/');
-      } else {
-        setError('Login failed: No token received');
-      }
+      setMessage('Password reset successfully!');
+      navigate('/login'); // Redirect to login after successful reset
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error.response?.data?.message || 'Login failed. Please try again.');
+      setError(error.response?.data?.message || 'Failed to reset password.');
     }
   };
 
   return (
     <AuthContainer>
-      <AuthTitle>Login</AuthTitle>
+      <AuthTitle>Reset Password</AuthTitle>
       {error && <ErrorMessage>{error}</ErrorMessage>}
+      {message && <div>{message}</div>}
       <AuthForm onSubmit={handleSubmit}>
         <AuthInput
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <AuthInput
           type="password"
-          placeholder="Password"
+          placeholder="New Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <AuthButton type="submit">Log In</AuthButton>
+        <AuthInput
+          type="password"
+          placeholder="Confirm New Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+        <AuthButton type="submit">Reset Password</AuthButton>
       </AuthForm>
-      <AuthFooter>
-        New user? <AuthLink to="/signup">Register here</AuthLink>
-        <AuthLink to="/forgotpassword">Forgot Password?</AuthLink>
-      </AuthFooter>
     </AuthContainer>
   );
 };
 
-export default Login;
+export default ResetPassword;

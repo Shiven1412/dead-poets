@@ -9,13 +9,17 @@ const {
   followUser,
   unfollowUser,
   getCurrentUser,
-  searchUsers
+  searchUsers,
+  forgotPassword,
+  resetPassword
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
 // Public routes
 router.post('/register', registerUser);
 router.post('/login', authUser);
+router.post('/forgotpassword', forgotPassword);
+router.patch('/resetpassword/:token', resetPassword);
 
 // Protected routes
 router.get('/me', protect, getCurrentUser);

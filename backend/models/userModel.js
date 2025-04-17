@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const userSchema = mongoose.Schema(
   {
@@ -34,6 +35,14 @@ const userSchema = mongoose.Schema(
         message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
       }
     },
+    resetPasswordToken: {
+      type: String,
+      default: null
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null
+    },
     bio: {
       type: String,
       default: ''
@@ -65,6 +74,13 @@ userSchema.pre('save', async function(next) {
 // Method to compare passwords
 userSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+userSchema.methods.createResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  this.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);

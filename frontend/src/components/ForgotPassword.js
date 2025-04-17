@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
 import { colors } from '../theme';
 
-// Common styled components for both login and signup
+// Common styled components (you can reuse from Login/Signup)
 const AuthContainer = styled.div`
   max-width: 400px;
   margin: 40px auto;
@@ -64,23 +63,6 @@ const AuthButton = styled.button`
   }
 `;
 
-const AuthFooter = styled.div`
-  text-align: center;
-  margin-top: 20px;
-  color: ${colors.text};
-`;
-
-const AuthLink = styled(Link)`
-  color: ${colors.primary};
-  text-decoration: none;
-  font-weight: 600;
-  margin-left: 5px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
 const ErrorMessage = styled.div`
   color: ${colors.error};
   background-color: ${colors.errorBackground};
@@ -90,44 +72,39 @@ const ErrorMessage = styled.div`
   font-size: 14px;
 `;
 
-
- const Login = ({ onLogin }) => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setMessage('');
+
     try {
-      const response = await axios.post(
-        'https://web-production-09e14.up.railway.app/api/users/login',
-        { email, password },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }
+      const config = {
+        header: {
+          "Content-Type": "application/json",
+        },
+      };
+      const { data } = await axios.post(
+        'https://web-production-09e14.up.railway.app/api/users/forgotpassword',
+        { email },
+        config
       );
 
-      if (response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
-        localStorage.setItem('userId', response.data._id);
-        onLogin?.();
-        navigate('/');
-      } else {
-        setError('Login failed: No token received');
-      }
+      setMessage(data.message);
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error.response?.data?.message || 'Login failed. Please try again.');
+      setError(error.response?.data?.message || 'Failed to request password reset.');
     }
   };
 
   return (
     <AuthContainer>
-      <AuthTitle>Login</AuthTitle>
+      <AuthTitle>Forgot Password</AuthTitle>
       {error && <ErrorMessage>{error}</ErrorMessage>}
+      {message && <div>{message}</div>}
       <AuthForm onSubmit={handleSubmit}>
         <AuthInput
           type="email"
@@ -136,21 +113,10 @@ const ErrorMessage = styled.div`
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <AuthInput
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <AuthButton type="submit">Log In</AuthButton>
+        <AuthButton type="submit">Request Password Reset</AuthButton>
       </AuthForm>
-      <AuthFooter>
-        New user? <AuthLink to="/signup">Register here</AuthLink>
-        <AuthLink to="/forgotpassword">Forgot Password?</AuthLink>
-      </AuthFooter>
     </AuthContainer>
   );
 };
 
-export default Login;
+export default ForgotPassword;

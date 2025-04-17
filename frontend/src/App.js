@@ -8,6 +8,8 @@ import Contact from './pages/Contact';
 import Signup from './components/SignUp';
 import Login from './components/Login';
 import UserProfile from './pages/UserProfile';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 const AppContainer = styled.div`
   text-align: center;
@@ -25,6 +27,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile/:userId" element={<UserProfile />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/resetpassword/:token" element={<ResetPassword />} />
         </Routes>
       </AppContainer>
     </Router>
