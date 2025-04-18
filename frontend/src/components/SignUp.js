@@ -147,6 +147,7 @@ const ErrorMessage = styled.div`
       </AuthForm>
       <AuthFooter>
         Already have an account? <AuthLink to="/login">Login here</AuthLink>
+        <br></br>
         <AuthLink to="/forgotpassword">Forgot Password?</AuthLink>
       </AuthFooter>
     </AuthContainer>

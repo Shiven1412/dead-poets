@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { colors } from '../theme';
-import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa'; // Import heart and comment icons
+import { FaHeart, FaRegHeart, FaComment, FaEllipsisV } from 'react-icons/fa'; // Import heart, comment, and ellipsis icons
+import html2canvas from 'html2canvas';
+import ReactDOM from 'react-dom/client'; // Import ReactDOM
+import ShareablePoemCard from './ShareablePoemCard'; // Import the new component
 
 const Card = styled.div`
   background-color:rgb(43, 43, 44);
@@ -11,6 +14,7 @@ const Card = styled.div`
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-bottom: 20px;
+  position: relative; /* Make card position relative */
 `;
 
 const Header = styled.div`
@@ -145,14 +149,56 @@ const Comment = styled.div`
   padding: 5px;
 `;
 
-// const Comment = styled.div`
-//   padding: 8px;
-//   border-bottom: 1px solid #eee;
-// `;
 const CommentsContainer = styled.div`
   max-height: 160px; /* 8 lines of comment */
   overflow-y: auto;
   padding: 5px;
+`;
+
+const OptionsButton = styled.button`
+  background: none;
+  border: none;
+  color: rgb(216, 213, 171);
+  padding: 5px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-size: 14px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  &:hover {
+    color: rgb(255, 191, 152);
+  }
+`;
+
+const OptionsMenu = styled.div`
+  position: absolute;
+  top: 30px;
+  right: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 5px 0;
+  display: ${props => (props.isOpen ? 'block' : 'none')};
+  z-index: 10;
+`;
+
+const Option = styled.button`
+  display: block;
+  width: 100%;
+  padding: 8px 15px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
 `;
 
 const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => {
@@ -162,6 +208,8 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => 
   const [comments, setComments] = useState(poem.comments || []); // Initialize comments
   const [showComments, setShowComments] = useState(false); // Add this line
   const [hasLiked, setHasLiked] = useState(poem.likes.includes(currentUser?._id)); // Check if user has liked
+  const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
+  const cardRef = useRef(null);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -223,8 +271,95 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => 
     setHasLiked(!hasLiked); // Toggle the hasLiked state
   };
 
+  const handleShareLink = () => {
+    const poemUrl = window.location.origin + `/poem/${poem._id}`; // Adjust the URL as needed
+    navigator.clipboard.writeText(poemUrl);
+    alert('Poem link copied to clipboard!');
+    setIsOptionsMenuOpen(false); // Close options menu
+  };
+
+  const handleShareImage = async () => {
+    try {
+      // Create a temporary container
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      // Render the ShareablePoemCard into the container
+      const root = ReactDOM.createRoot(container);
+      root.render(<ShareablePoemCard poem={poem} />);
+
+      // Use html2canvas on the container
+      const canvas = await html2canvas(container, {
+        useCORS: true,
+        logging: true, // Enable logging
+        letterRendering: 1,
+        allowTaint: true,
+      });
+
+      // Clean up the temporary container
+      root.unmount();
+      document.body.removeChild(container);
+
+      const dataURL = canvas.toDataURL('image/png');
+
+      // Attempt to share with the Web Share API
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: poem.title,
+            text: poem.content.substring(0, 100) + '...',
+            url: dataURL, // Share the Data URL
+          });
+          console.log('Shared successfully');
+        } catch (error) {
+          console.error('Error sharing:', error);
+          // If native share fails, fall back to downloading the image
+          downloadImage(dataURL, `poem_${poem._id}.png`);
+        }
+      } else {
+        // If Web Share API is not supported, download the image
+        downloadImage(dataURL, `poem_${poem._id}.png`);
+      }
+      setIsOptionsMenuOpen(false); // Close options menu
+    } catch (error) {
+      console.error('Error creating image:', error);
+    }
+  };
+
+  const handleNativeShare = async () => {
+    const poemUrl = window.location.origin + `/poem/${poem._id}`;
+    const shareData = {
+      title: poem.title,
+      text: poem.content.substring(0, 100) + '...', // Short excerpt
+      url: poemUrl,
+    };
+
+    try {
+      await navigator.share(shareData);
+      console.log('Shared successfully');
+    } catch (err) {
+      console.log('Error sharing:', err);
+      // Fallback to copy link if sharing is not supported
+      handleShareLink();
+    }
+    setIsOptionsMenuOpen(false); // Close options menu
+  };
+
+  const toggleOptionsMenu = () => {
+    setIsOptionsMenuOpen(!isOptionsMenuOpen);
+  };
+
+  const downloadImage = (dataURL, filename) => {
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <Card>
+    <Card ref={cardRef}>
       <Header>
         <Avatar>
           {poem.author?.username?.charAt(0).toUpperCase() || 'A'}
@@ -233,6 +368,17 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => 
           {poem.author?.username || 'Anonymous'}
         </UserLink>
       </Header>
+      <OptionsButton onClick={toggleOptionsMenu}>
+        <FaEllipsisV />
+      </OptionsButton>
+      <OptionsMenu isOpen={isOptionsMenuOpen}>
+        {navigator.share ? (
+          <Option onClick={handleNativeShare}>Share</Option>
+        ) : (
+          <Option onClick={handleShareLink}>Copy Link</Option>
+        )}
+        <Option onClick={handleShareImage}>Share Image</Option>
+      </OptionsMenu>
       {isEditing ? (
         <textarea
           value={editedContent}

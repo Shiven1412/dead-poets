@@ -77,6 +77,29 @@ const ForgotPassword = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  const handleTestEmail = async () => {
+    setError('');
+    setMessage('');
+
+    try {
+      const config = {
+        header: {
+          "Content-Type": "application/json",
+        },
+      };
+      // Replace with a dedicated test endpoint on your backend
+      const { data } = await axios.post(
+        'https://web-production-09e14.up.railway.app/api/users/forgotpassword',
+        { email: 'thedeadpoetsocietyinfo@gmail.com' }, // Use your test email
+        config
+      );
+
+      setMessage(data.message);
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to send test email.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -115,6 +138,7 @@ const ForgotPassword = () => {
         />
         <AuthButton type="submit">Request Password Reset</AuthButton>
       </AuthForm>
+      <button onClick={handleTestEmail}>Send Test Email</button>
     </AuthContainer>
   );
 };
