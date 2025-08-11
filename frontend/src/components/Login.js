@@ -184,9 +184,9 @@ const ErrorMessage = styled.div`
         <AuthButton type="button" onClick={handleGoogleLogin}>
   Login with Google
 </AuthButton>
-<AuthButton type="button" onClick={handleInstagramLogin}>
+{/* <AuthButton type="button" onClick={handleInstagramLogin}>
   Login with Instagram
-</AuthButton>
+</AuthButton> */}
       </AuthForm>
       <AuthFooter>
         New user? <AuthLink to="/signup">Register here</AuthLink>

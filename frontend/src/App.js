@@ -11,6 +11,7 @@ import UserProfile from './pages/UserProfile';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import { createClient } from '@supabase/supabase-js';
+import { Link } from 'react-router-dom';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
@@ -48,6 +49,10 @@ function App() {
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/resetpassword/:token" element={<ResetPassword />} />
         </Routes>
+        <footer>
+          {/* ... other footer content ... */}
+          <Link to="/privacy">Privacy Policy</Link>
+        </footer>
       </AppContainer>
     </Router>
   );
