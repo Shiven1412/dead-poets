@@ -13,7 +13,10 @@ connectDB();
 
 const allowedOrigins = [
   'https://dead-poets-society.vercel.app',
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'https://dead-poets.onrender.com',
+  'https://dead-poets-society.vercel.app/'
+
 ];
 
 app.use(cors({
