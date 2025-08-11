@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import PoemCard from '../components/PoemCard';
+import PoemFact from '../components/PoemFact';
 import { colors } from '../theme';
 import { FaSearch, FaUserCircle, FaSignOutAlt, FaSort } from 'react-icons/fa';
 
@@ -454,6 +455,7 @@ const Home = () => {
         <>
           <SectionTitle></SectionTitle>
           <p>Welcome to The Dead Poets Society.</p>
+          <PoemFact />
         </>
       )}
     </PageContainer>

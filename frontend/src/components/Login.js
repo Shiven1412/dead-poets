@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { colors } from '../theme';
+import { supabase } from '../supabase';
 
 // Common styled components for both login and signup
 const AuthContainer = styled.div`
@@ -124,6 +125,42 @@ const ErrorMessage = styled.div`
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
+      if (error) {
+        console.error('Google login error:', error);
+        setError(error.message);
+      } else {
+        // Redirect user to the URL provided by Supabase
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error('Unexpected error during Google login:', err);
+      setError('An unexpected error occurred during Google login.');
+    }
+  };
+
+  const handleInstagramLogin = async () => {
+    try {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'instagram',
+        });
+        if (error) {
+            console.error('Instagram login error:', error);
+            setError(error.message);
+        } else {
+            // Redirect user to the URL provided by Supabase
+            window.location.href = data.url;
+        }
+    } catch (err) {
+        console.error('Unexpected error during Instagram login:', err);
+        setError('An unexpected error occurred during Instagram login.');
+    }
+};
+
   return (
     <AuthContainer>
       <AuthTitle>Login</AuthTitle>
@@ -144,6 +181,12 @@ const ErrorMessage = styled.div`
           required
         />
         <AuthButton type="submit">Log In</AuthButton>
+        <AuthButton type="button" onClick={handleGoogleLogin}>
+  Login with Google
+</AuthButton>
+<AuthButton type="button" onClick={handleInstagramLogin}>
+  Login with Instagram
+</AuthButton>
       </AuthForm>
       <AuthFooter>
         New user? <AuthLink to="/signup">Register here</AuthLink>
