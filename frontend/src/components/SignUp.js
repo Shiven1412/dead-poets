@@ -103,7 +103,7 @@ const ErrorMessage = styled.div`
     setError('');
     try {
       const response = await axios.post(
-        'https://web-production-09e14.up.railway.app/api/users/register',
+        'https://dead-poets.onrender.com/api/users/register',
         { username, email, password }
       );
 

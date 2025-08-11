@@ -218,7 +218,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => 
   const handleSave = async () => {
     try {
       const response = await axios.put(
-        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}`,
+        `https://dead-poets.onrender.com/api/poems/${poem._id}`,
         { content: editedContent },
         {
           headers: {
@@ -235,7 +235,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => 
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`https://web-production-09e14.up.railway.app/api/poems/${poem._id}`, {
+      await axios.delete(`https://dead-poets.onrender.com/api/poems/${poem._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
@@ -251,7 +251,7 @@ const PoemCard = ({ poem, onLike, updatePoem, currentUser, showEditDelete }) => 
   const handleCommentSubmit = async () => {
     try {
       const response = await axios.post(
-        `https://web-production-09e14.up.railway.app/api/poems/${poem._id}/comment`, // Use /comment endpoint
+        `https://dead-poets.onrender.com/api/poems/${poem._id}/comment`, // Use /comment endpoint
         { text: commentText },
         {
           headers: {

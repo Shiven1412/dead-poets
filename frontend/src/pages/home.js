@@ -299,7 +299,7 @@ const Home = () => {
 
   const fetchCurrentUser = async (token) => {
     try {
-      const response = await axios.get('https://web-production-09e14.up.railway.app/api/users/me', {
+      const response = await axios.get('https://dead-poets.onrender.com/api/users/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -313,7 +313,7 @@ const Home = () => {
 
   const fetchPoems = async () => {
     try {
-      const res = await axios.get('https://web-production-09e14.up.railway.app/api/poems');
+      const res = await axios.get('https://dead-poets.onrender.com/api/poems');
       setPoems(res.data);
     } catch (error) {
       console.error('Error fetching poems:', error);
@@ -336,7 +336,7 @@ const Home = () => {
   const handleLike = async (poemId) => {
     try {
       await axios.post(
-        `https://web-production-09e14.up.railway.app/api/poems/${poemId}/like`,
+        `https://dead-poets.onrender.com/api/poems/${poemId}/like`,
         {},
         {
           headers: {
@@ -357,7 +357,7 @@ const Home = () => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `https://web-production-09e14.up.railway.app/api/users/search?search=${searchTerm}`,
+        `https://dead-poets.onrender.com/api/users/search?search=${searchTerm}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`,

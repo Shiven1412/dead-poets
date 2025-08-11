@@ -98,7 +98,7 @@ const ResetPassword = () => {
         },
       };
       await axios.patch(
-        `https://web-production-09e14.up.railway.app/api/users/resetpassword/${token}`,
+        `https://dead-poets.onrender.com/api/users/resetpassword/${token}`,
         { password },
         config
       );

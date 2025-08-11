@@ -252,12 +252,12 @@ const UserProfile = () => {
     const fetchProfile = async () => {
       try {
         const [userRes, poemsRes] = await Promise.all([
-          axios.get(`https://web-production-09e14.up.railway.app/api/users/${userId}`, {
+          axios.get(`https://dead-poets.onrender.com/api/users/${userId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('authToken')}`
             }
           }),
-          axios.get(`https://web-production-09e14.up.railway.app/api/poems?author=${userId}`, {
+          axios.get(`https://dead-poets.onrender.com/api/poems?author=${userId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('authToken')}`
             }
@@ -278,7 +278,7 @@ const UserProfile = () => {
 
   const handleFollow = async () => {
     try {
-      await axios.post(`https://web-production-09e14.up.railway.app/api/users/${userId}/follow`, {}, {
+      await axios.post(`https://dead-poets.onrender.com/api/users/${userId}/follow`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -292,7 +292,7 @@ const UserProfile = () => {
   const handleUpdateBio = async () => {
     try {
       await axios.put(
-        `https://web-production-09e14.up.railway.app/api/users/profile`,
+        `https://dead-poets.onrender.com/api/users/profile`,
         { bio: bioInput },
         {
           headers: {
@@ -310,7 +310,7 @@ const UserProfile = () => {
  const handleDeletePoem = async (poemId) => {
   try {
     await axios.delete(
-      `https://web-production-09e14.up.railway.app/api/poems/${poemId}`,
+      `https://dead-poets.onrender.com/api/poems/${poemId}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`,
@@ -333,7 +333,7 @@ const UserProfile = () => {
     e.preventDefault();
     try {
       await axios.post(
-        'https://web-production-09e14.up.railway.app/api/poems',
+        'https://dead-poets.onrender.com/api/poems',
         { title, content, author: userId },
         {
           headers: {
@@ -344,7 +344,7 @@ const UserProfile = () => {
       setContent('');
       setTitle('');
       setShowForm(false);
-      const poemsRes = await axios.get(`https://web-production-09e14.up.railway.app/api/poems?author=${userId}`, {
+      const poemsRes = await axios.get(`https://dead-poets.onrender.com/api/poems?author=${userId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`
         }

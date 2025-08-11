@@ -89,7 +89,7 @@ const ForgotPassword = () => {
       };
       // Replace with a dedicated test endpoint on your backend
       const { data } = await axios.post(
-        'https://web-production-09e14.up.railway.app/api/users/forgotpassword',
+        'https://dead-poets.onrender.com/api/users/forgotpassword',
         { email: 'thedeadpoetsocietyinfo@gmail.com' }, // Use your test email
         config
       );
@@ -112,7 +112,7 @@ const ForgotPassword = () => {
         },
       };
       const { data } = await axios.post(
-        'https://web-production-09e14.up.railway.app/api/users/forgotpassword',
+        'https://dead-poets.onrender.com/api/users/forgotpassword',
         { email },
         config
       );
