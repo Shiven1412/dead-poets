@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { colors } from '../theme';
-import { supabase } from '../supabase';
+import { supabase } from '../App';
 
 // Common styled components for both login and signup
 const AuthContainer = styled.div`
