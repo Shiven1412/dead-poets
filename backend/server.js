@@ -15,7 +15,10 @@ const allowedOrigins = [
   'https://dead-poets-society.vercel.app',
   'http://localhost:3000',
   'https://dead-poets.onrender.com',
-  'https://dead-poets-society.vercel.app/'
+  'https://dead-poets-society.vercel.app/',
+  'https://api.cloudinary.com/v1_1/dmvuqhppj/image/upload',
+  'https://api.cloudinary.com'
+
 
 ];
 
