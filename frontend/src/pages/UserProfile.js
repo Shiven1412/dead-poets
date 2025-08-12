@@ -376,13 +376,8 @@ const UserProfile = () => {
         cloudinaryFormData.append('cloud_name', 'dmvuqhppj'); // Replace with your Cloudinary cloud name
 
         const cloudinaryResponse = await axios.post(
-          `https://api.cloudinary.com/v1_1/dmvuqhppj/image/upload`, // Replace with your Cloudinary cloud name
-          cloudinaryFormData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
+          `https://api.cloudinary.com/v1_1/dmvuqhppj/image/upload`,
+          cloudinaryFormData
         );
 
         if (cloudinaryResponse.data.secure_url) {
