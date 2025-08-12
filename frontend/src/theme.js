@@ -7,6 +7,8 @@ export const colors = {
   lightText: '#718096',
   poemcard: '#212121',
   poemtext: '#7c1819',
+  poemfcard: '#d68e6177',
+  poemftext: '#5d0000ff',
 };
 
 export const fonts = {

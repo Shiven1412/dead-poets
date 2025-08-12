@@ -51,7 +51,7 @@ function App() {
         </Routes>
         <footer>
           {/* ... other footer content ... */}
-          <Link to="/privacy">Privacy Policy</Link>
+          {/* <Link to="/privacy">Privacy Policy</Link> */}
         </footer>
       </AppContainer>
     </Router>
