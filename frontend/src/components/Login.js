@@ -134,12 +134,47 @@ const ErrorMessage = styled.div`
         console.error('Google login error:', error);
         setError(error.message);
       } else {
-        // Redirect user to the URL provided by Supabase
-        window.location.href = data.url;
+        // After successful Google authentication, Supabase redirects back to your app.
+        // The session is automatically stored.  Now, fetch the user data and create/login the user in your backend.
+        
+        // Get the current session
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+          const { user } = session;
+
+          // Now, send the user data to your backend to create/login the user
+          await createUserAndLogin(user);
+        }
       }
     } catch (err) {
       console.error('Unexpected error during Google login:', err);
       setError('An unexpected error occurred during Google login.');
+    }
+  };
+
+  const createUserAndLogin = async (user) => {
+    try {
+      const response = await axios.post(
+        'https://dead-poets.onrender.com/api/users/oauth/google', // Create a new route in your backend
+        {
+          username: user.email.split('@')[0], // Or generate a unique username
+          email: user.email,
+          // You might not have a password from Google, so don't send one.
+        }
+      );
+
+      if (response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('userId', response.data._id);
+        onLogin?.();
+        navigate('/');
+      } else {
+        setError('Google login failed: No token received');
+      }
+    } catch (error) {
+      console.error('Google login failed:', error);
+      setError(error.response?.data?.message || 'Google login failed. Please try again.');
     }
   };
 

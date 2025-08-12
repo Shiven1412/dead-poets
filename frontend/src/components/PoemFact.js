@@ -10,12 +10,19 @@ const FactCard = styled.div`
   padding: 260px;
   margin-bottom: 20px;
   text-align: center;
+   @media (max-width: 580px) {
+    padding: 40px;
+    margin: 10px;
+  }
 `;
 
 const FactText = styled.p`
   font-style: italic;
   color: ${colors.poemftext};
   font-size: 36px;
+   @media (max-width: 580px) {
+    font-size: 22px;
+  }
 `;
 
 const PoemFact = () => {

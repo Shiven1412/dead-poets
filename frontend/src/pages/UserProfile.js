@@ -247,6 +247,9 @@ const UserProfile = () => {
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -355,6 +358,61 @@ const UserProfile = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setProfileImage(file);
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('username', newUsername);
+
+      if (profileImage) {
+        // Upload the image to Cloudinary
+        const cloudinaryFormData = new FormData();
+        cloudinaryFormData.append('file', profileImage);
+        cloudinaryFormData.append('upload_preset', 'profile_photo'); // Replace with your Cloudinary upload preset
+        cloudinaryFormData.append('cloud_name', 'dmvuqhppj'); // Replace with your Cloudinary cloud name
+
+        const cloudinaryResponse = await axios.post(
+          `https://api.cloudinary.com/v1_1/dmvuqhppj/image/upload`, // Replace with your Cloudinary cloud name
+          cloudinaryFormData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+
+        if (cloudinaryResponse.data.secure_url) {
+          const cloudinaryLink = cloudinaryResponse.data.secure_url;
+          formData.append('profileImage', cloudinaryLink); // Send the Cloudinary link to your backend
+        } else {
+          console.error('Cloudinary upload failed:', cloudinaryResponse.data);
+          // Handle the error appropriately (e.g., show an error message to the user)
+          return;
+        }
+      }
+
+      const response = await axios.put(
+        `https://dead-poets.onrender.com/api/users/profile`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      setUser(response.data);
+      setIsEditingProfile(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!user) return <div>User not found</div>;
 
@@ -365,30 +423,50 @@ const UserProfile = () => {
           {user.username.charAt(0).toUpperCase()}
         </Avatar>
         <ProfileInfo>
-          <Username>{user.username}</Username>
-          {isEditingBio ? (
-            <div>
-              <textarea
-                value={bioInput}
-                onChange={(e) => setBioInput(e.target.value)}
-                style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
-              />
-              <SubmitButton onClick={handleUpdateBio}>Save</SubmitButton>
-              <CancelButton onClick={() => setIsEditingBio(false)}>Cancel</CancelButton>
-            </div>
-          ) : (
-            <>
-              <Bio>{user.bio || 'No bio yet.'}</Bio>
-              {localStorage.getItem('userId') === userId && (
-                <EditBioButton onClick={() => {
-                  setIsEditingBio(true);
-                  setBioInput(user.bio || '');
-                }}>
-                  Edit Bio
-                </EditBioButton>
-              )}
-            </>
-          )}
+            {isEditingProfile ? (
+              <div>
+                <label htmlFor="newUsername">New Username:</label>
+                <Input
+                  type="text"
+                  id="newUsername"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
+                />
+
+                <label htmlFor="profileImage">Profile Image:</label>
+                <Input
+                  type="file"
+                  id="profileImage"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
+                />
+
+                <SubmitButton onClick={handleUpdateProfile}>Save</SubmitButton>
+                <CancelButton onClick={() => setIsEditingProfile(false)}>Cancel</CancelButton>
+              </div>
+            ) : (
+              <>
+                <Username>{user.username}</Username>
+                {localStorage.getItem('userId') === userId && (
+                  <EditBioButton onClick={() => {
+                    setIsEditingProfile(true);
+                    setNewUsername(user.username);
+                  }}>
+                    Edit Profile
+                  </EditBioButton>
+                )}
+                {localStorage.getItem('userId') === userId && (
+                  <EditBioButton onClick={() => {
+                    setIsEditingBio(true);
+                    setBioInput(user.bio || '');
+                  }}>
+                    Edit Bio
+                  </EditBioButton>
+                )}
+              </>
+            )}
           <Stats>
             <StatItem>
               <StatNumber>{poems.length}</StatNumber>

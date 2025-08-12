@@ -4,6 +4,13 @@ const User = require('../models/userModel');
 const Poem = require('../models/poemModel');
 const generateToken = require('../utils/generateToken');
 const sendEmail = require('../utils/sendEmail'); // Assuming you created sendEmail.js
+const cloudinary = require('cloudinary');
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // @desc    Register a new user
 // @route   POST /api/users/register
@@ -118,7 +125,24 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
+    user.username = req.body.username || user.username;
     user.bio = req.body.bio || user.bio;
+
+    if (req.body.profileImage) {
+      // The profileImage is now a Cloudinary link
+      // Transform the image to greyscale and high contrast using Cloudinary's API
+      const transformedImage = await cloudinary.v2.uploader.upload(
+        req.body.profileImage,
+        {
+          transformation: [
+            { effect: 'grayscale' },
+            { effect: 'contrast', level: 50 }, // Adjust the contrast level as needed
+          ],
+        }
+      );
+
+      user.profileImage = transformedImage.secure_url;
+    }
 
     const updatedUser = await user.save();
 
@@ -127,6 +151,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       username: updatedUser.username,
       email: updatedUser.email,
       bio: updatedUser.bio,
+      profileImage: updatedUser.profileImage,
       token: generateToken(updatedUser._id),
     });
   } else {
@@ -311,6 +336,42 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Register or login with Google
+// @route   POST /api/users/google
+// @access  Public
+const registerOrLoginWithGoogle = asyncHandler(async (req, res) => {
+  const { username, email } = req.body;
+
+  if (!email) {
+    res.status(400);
+    throw new Error('Email is required for Google login');
+  }
+
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    // Create a new user
+    user = await User.create({
+      username: username || 'google_user', // Or generate a unique username
+      email,
+      // Since it's Google OAuth, you might not have a password.  You can set a random one.
+      password: Math.random().toString(36).substring(7), // Generate a random password
+    });
+
+    if (!user) {
+      res.status(400);
+      throw new Error('Invalid user data');
+    }
+  }
+
+  res.status(200).json({
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    token: generateToken(user._id),
+  });
+});
+
 module.exports = { 
   registerUser, 
   authUser, 
@@ -322,5 +383,6 @@ module.exports = {
   getCurrentUser,
   searchUsers,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  registerOrLoginWithGoogle
 };
