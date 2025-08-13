@@ -253,26 +253,29 @@ const UserProfile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      try {
-        const [userRes, poemsRes] = await Promise.all([
-          axios.get(`https://dead-poets.onrender.com/api/users/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('authToken')}`
-            }
-          }),
-          axios.get(`https://dead-poets.onrender.com/api/poems?author=${userId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('authToken')}`
-            }
-          })
-        ]);
-        setUser(userRes.data);
-        setPoems(poemsRes.data);
-        setIsFollowing(userRes.data.followers.includes(localStorage.getItem('userId')));
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      } finally {
-        setLoading(false);
+      if (userId) { // Add this check
+        try {
+          const [userRes, poemsRes] = await Promise.all([
+            axios.get(`https://dead-poets.onrender.com/api/users/${userId}`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('authToken')}`
+              }
+            }),
+            axios.get(`https://dead-poets.onrender.com/api/poems?author=${userId}`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('authToken')}`
+              }
+            })
+          ]);
+          setUser(userRes.data);
+          setPoems(poemsRes.data);
+          setIsFollowing(userRes.data.followers.includes(localStorage.getItem('userId')));
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+          // Optionally show error message to user
+        } finally {
+          setLoading(false);
+        }
       }
     };
 
@@ -372,7 +375,7 @@ const UserProfile = () => {
         // Upload the image to Cloudinary
         const cloudinaryFormData = new FormData();
         cloudinaryFormData.append('file', profileImage);
-        cloudinaryFormData.append('upload_preset', 'profile_photo'); // Replace with your Cloudinary upload preset
+        cloudinaryFormData.append('upload_preset', 'ml_default'); // Replace with your Cloudinary upload preset
         cloudinaryFormData.append('cloud_name', 'dmvuqhppj'); // Replace with your Cloudinary cloud name
 
         const cloudinaryResponse = await axios.post(
