@@ -122,6 +122,7 @@ const getUserById = asyncHandler(async (req, res) => {
 // @route   PUT /api/users/profile
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
+  console.log('req.body:', req.body); // Add this line
   const user = await User.findById(req.user._id);
 
   if (user) {
@@ -129,19 +130,24 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.bio = req.body.bio || user.bio;
 
     if (req.body.profileImage) {
-      // The profileImage is now a Cloudinary link
-      // Transform the image to greyscale and high contrast using Cloudinary's API
-      const transformedImage = await cloudinary.v2.uploader.upload(
-        req.body.profileImage,
-        {
-          transformation: [
-            { effect: 'grayscale' },
-            { effect: 'contrast', level: 50 }, // Adjust the contrast level as needed
-          ],
-        }
-      );
+      try {
+        // The profileImage is now a Cloudinary link
+        // Transform the image to greyscale and high contrast using Cloudinary's API
+        const transformedImage = await cloudinary.v2.uploader.upload(
+          req.body.profileImage,
+          {
+            transformation: [
+              { effect: 'grayscale' },
+              { effect: 'contrast', level: 50 }, // Adjust the contrast level as needed
+            ],
+          }
+        );
 
-      user.profileImage = transformedImage.secure_url;
+        user.profileImage = transformedImage.secure_url;
+      } catch (cloudinaryError) {
+        console.error('Cloudinary error:', cloudinaryError);
+        return res.status(500).json({ message: 'Cloudinary upload failed' });
+      }
     }
 
     const updatedUser = await user.save();

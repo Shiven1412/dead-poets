@@ -392,7 +392,7 @@ const UserProfile = () => {
           return;
         }
       }
-
+      // Only append profileImage to formData if cloudinary upload was successful
       const response = await axios.put(
         `https://dead-poets.onrender.com/api/users/profile`,
         formData,
