@@ -265,6 +265,11 @@ const UserProfile = () => {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem('authToken')}`
               }
+            }),
+            axios.get(`https://dead-poets.onrender.com/api/poems?author=${userId}`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('authToken')}`
+              }
             })
           ]);
           setUser(userRes.data);
@@ -377,6 +382,7 @@ const UserProfile = () => {
         cloudinaryFormData.append('file', profileImage);
         cloudinaryFormData.append('upload_preset', 'ml_default'); // Replace with your Cloudinary upload preset
         cloudinaryFormData.append('cloud_name', 'dmvuqhppj'); // Replace with your Cloudinary cloud name
+        cloudinaryFormData.append('transformation', 'e_grayscale,e_contrast:50'); // Apply transformations during upload
 
         const cloudinaryResponse = await axios.post(
           `https://api.cloudinary.com/v1_1/dmvuqhppj/image/upload`,

@@ -130,24 +130,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.bio = req.body.bio || user.bio;
 
     if (req.body.profileImage) {
-      try {
-        // The profileImage is now a Cloudinary link
-        // Transform the image to greyscale and high contrast using Cloudinary's API
-        const transformedImage = await cloudinary.v2.uploader.upload(
-          req.body.profileImage,
-          {
-            transformation: [
-              { effect: 'grayscale' },
-              { effect: 'contrast', level: 50 }, // Adjust the contrast level as needed
-            ],
-          }
-        );
-
-        user.profileImage = transformedImage.secure_url;
-      } catch (cloudinaryError) {
-        console.error('Cloudinary error:', cloudinaryError);
-        return res.status(500).json({ message: 'Cloudinary upload failed' });
-      }
+      // The profileImage is now a Cloudinary link
+      // No need to transform the image here, as it's already transformed during upload
+      user.profileImage = req.body.profileImage;
     }
 
     const updatedUser = await user.save();
